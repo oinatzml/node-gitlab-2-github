@@ -2,7 +2,7 @@ import Settings from './src/settings';
 
 export default {
   gitlab: {
-    // url: 'https://gitlab.mycompany.com',
+    url: 'https://gitlab.mycompany.com',
     token: '{{gitlab private token}}',
     projectId: null,
     listArchivedProjects: true,
@@ -13,8 +13,12 @@ export default {
     // apiUrl: 'https://api.github.mycompany.com',
     owner: '{{repository owner (user or organization)}}',
     ownerIsOrg: false,
-    token: '{{token}}',
-    token_owner: '{{token_owner}}',
+    tokens: [
+      {
+        value: '',
+        owner: '',
+      }
+    ],
     repo: '{{repo}}',
     recreateRepo: false,
   },

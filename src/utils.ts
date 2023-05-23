@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import S3 from 'aws-sdk/clients/s3';
 import { GitlabHelper } from './gitlabHelper';
+import fs from 'fs';
 
 export const sleep = (milliseconds: number) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -83,6 +84,22 @@ export const migrateAttachments = async (
       offsetToAttachment[
         match.index as number
       ] = `${prefix}[${name}](${attachmentUrl})`;
+
+      // Save locally
+      const basename = path.basename(url);
+      const attachmentBuffer = await gitlabHelper.getAttachment(url);
+      if (!attachmentBuffer) {
+        continue;
+      }
+
+      // Check and create needed directories
+      const outputDir = path.join(__dirname, '_output');
+      createDirectory(outputDir);
+      const outputProjectDir = path.join(outputDir, githubRepoId.toString());
+      createDirectory(outputProjectDir);
+
+      // Write file
+      writeBufferToFile(attachmentBuffer, path.join(outputProjectDir, basename));
     }
   }
 
@@ -91,3 +108,20 @@ export const migrateAttachments = async (
     ({}, {}, {}, {}, offset, {}) => offsetToAttachment[offset]
   );
 };
+
+function createDirectory(dirPath: string): void {
+  if (!fs.existsSync(dirPath)) {
+    console.log(`Creating directory: ${dirPath}`);
+    fs.mkdirSync(dirPath);
+  }
+}
+
+function writeBufferToFile(buffer: Buffer, filePath: string): void {
+  fs.writeFile(filePath, buffer, (err) => {
+    if (err) {
+      console.error('Error writing file:', err);
+    } else {
+      console.log('File written successfully!');
+    }
+  });
+}

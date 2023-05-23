@@ -138,3 +138,6 @@ modules.xml
 
 # Ignore whole .idea folder:
 .idea/
+
+# Ignore local saving folder:
+_output/

@@ -117,17 +117,18 @@ export class GitlabHelper {
   async getAttachment(relurl: string) {
     try {
       const attachmentUrl = this.host + '/' + this.projectPath + relurl;
-      const data = (
+      const response = (
         await axios.get(attachmentUrl, {
           responseType: 'arraybuffer',
           headers: {
             // HACK: work around GitLab's API lack of GET for attachments
             // See https://gitlab.com/gitlab-org/gitlab/-/issues/24155
+            // Remember to disable "Require authentication to view media files" in GitLab
             Cookie: `_gitlab_session=${this.sessionCookie}`,
           },
         })
-      ).data;
-      return Buffer.from(data, 'binary');
+      );
+      return Buffer.from(response.data, 'binary');
     } catch (err) {
       console.error(`Could not download attachment #${relurl}.`);
       return null;

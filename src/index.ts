@@ -319,10 +319,10 @@ async function transferMilestones(usePlaceholders: boolean) {
         .createMilestone(milestone)
         .then(created => {
           let m = milestoneMap.get(milestone.iid);
+          // Remember that map works as <GitLabNumber, {GitHubNumber, Title}>
           if (m && m.number != created.number) {
-            throw new Error(
-              `Mismatch between milestone ${m.number}: '${m.title}' in map and created ${created.number}: '${created.title}'`
-            );
+            m.number = created.number;
+            console.log(`Fixed mismatch between milestone ${m.number}: '${m.title}' in map and created ${created.number}: '${created.title}'`);
           }
         })
         .catch(err => {
@@ -331,6 +331,12 @@ async function transferMilestones(usePlaceholders: boolean) {
         });
     } else {
       console.log('Already exists: ' + milestone.title);
+      let m = milestoneMap.get(milestone.iid);
+      // Remember that map works as <GitLabNumber, {GitHubNumber, Title}>
+      if (m && m.number != foundMilestone.number) {
+        m.number = foundMilestone.number;
+        console.log(`Fixed mismatch between milestone ${m.number}: '${m.title}' in map and found ${foundMilestone.number}: '${foundMilestone.title}'`);
+      }
     }
   }
 }

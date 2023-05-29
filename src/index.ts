@@ -439,10 +439,12 @@ async function transferIssues() {
   // sort issues in ascending order of their issue number (by iid)
   issues = issues.sort((a, b) => a.iid - b.iid);
 
+  console.log('GitLab: Obtained ' + issues.length.toString() + ' issues');
+
   // get a list of the current issues in the new GitHub repo (likely to be empty)
   let githubIssues = await githubHelper.getAllGithubIssues();
 
-  console.log(`Transferring ${issues.length} issues.`);
+  console.log('GitHub: Obtained ' + githubIssues.length.toString() + ' issues');
 
   if (settings.usePlaceholderIssuesForMissingIssues) {
     for (let i = 0; i < issues.length; i++) {
@@ -474,7 +476,7 @@ async function transferIssues() {
       i => i.title.trim() === issue.title.trim()
     );
     if (!githubIssue) {
-      console.log(`\nMigrating issue #${issue.iid} ('${issue.title}')...`);
+      console.log(`\nMigrating issue #${issue.iid} - ${issue.title}...`);
       try {
         // process asynchronous code in sequence -- treats the code sort of like blocking
         await githubHelper.createIssueAndComments(issue);
@@ -545,6 +547,8 @@ async function transferMergeRequests() {
     labels: settings.filterByLabel,
   });
 
+  console.log('GitLab: Obtained ' + mergeRequests.length.toString() + ' merge requests');
+
   // Sort merge requests in ascending order of their number (by iid)
   mergeRequests = mergeRequests.sort((a, b) => a.iid - b.iid);
 
@@ -552,9 +556,11 @@ async function transferMergeRequests() {
   // be empty)
   let githubPullRequests = await githubHelper.getAllGithubPullRequests();
 
+  console.log('GitHub: Obtained ' + githubPullRequests.length.toString() + ' merge requests');
+
   // get a list of the current issues in the new GitHub repo (likely to be empty)
   // Issues are sometimes created from Gitlab merge requests. Avoid creating duplicates.
-  let githubIssues = await githubHelper.getAllGithubIssues();
+  let githubIssues = await githubHelper.getAllGithubIssues(true);
 
   console.log(
     'Transferring ' + mergeRequests.length.toString() + ' merge requests'

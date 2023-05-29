@@ -111,7 +111,7 @@ export const migrateAttachments = async (
 
 function createDirectory(dirPath: string): void {
   if (!fs.existsSync(dirPath)) {
-    console.log(`Creating directory: ${dirPath}`);
+    console.log(`\tCreating directory: ${dirPath}`);
     fs.mkdirSync(dirPath);
   }
 }
@@ -119,9 +119,9 @@ function createDirectory(dirPath: string): void {
 function writeBufferToFile(buffer: Buffer, filePath: string): void {
   fs.writeFile(filePath, buffer, (err) => {
     if (err) {
-      console.error('Error writing file:', err);
+      console.error('\tError writing file:', err);
     } else {
-      console.log('File written successfully!');
+      console.log('\tFile written successfully!');
     }
   });
 }

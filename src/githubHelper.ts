@@ -145,7 +145,7 @@ export class GithubHelper {
    * Get a list of all the current GitHub issues.
    * This uses a while loop to make sure that each page of issues is received.
    */
-  async getAllGithubIssues() {
+  async getAllGithubIssues(forMergeRequests: boolean = false) {
     let allIssues: IssuesListForRepoResponseData = [];
     let page = 1;
     const perPage = 100;
@@ -153,14 +153,22 @@ export class GithubHelper {
     while (true) {
       await utils.sleep(this.delayInMs);
       // get a paginated list of issues
-      const issues = await this.getDefaultGitHubApi().issues.listForRepo({
-        owner: this.githubOwner,
-        repo: this.githubRepo,
-        state: 'all',
-        labels: 'gitlab merge request',
-        per_page: perPage,
-        page: page,
-      });
+      const issues = forMergeRequests ?
+        await this.getDefaultGitHubApi().issues.listForRepo({
+          owner: this.githubOwner,
+          repo: this.githubRepo,
+          state: 'all',
+          labels: 'gitlab merge request',
+          per_page: perPage,
+          page: page,
+        }) :
+        await this.getDefaultGitHubApi().issues.listForRepo({
+          owner: this.githubOwner,
+          repo: this.githubRepo,
+          state: 'all',
+          per_page: perPage,
+          page: page,
+        });
 
       // if this page has zero issues then we are done!
       if (issues.data.length === 0) break;
